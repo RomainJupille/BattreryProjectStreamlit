@@ -4,6 +4,7 @@ from random import randint
 from seaborn import scatterplot, lineplot
 import numpy as np
 import matplotlib.pyplot as plt
+import joblib
 
 st.markdown("""#### Problème 1 : Prédire la durabilité d'une batterie avec 5 cycles""")
 st.write('\n')
@@ -19,7 +20,12 @@ n = randint(0,df_X_model_one.shape[0]-1)
 col1, col2 = st.columns(2)
 if col1.button('Faire une prédiction :'):
     n = randint(0,df_raw_data_model_one.shape[0]-1)
-    prediction = n%2
+
+    ### proviroire : à remplacer par le call d'API
+    model = joblib.load('model_one.joblib')
+    prediction = model.predict(df_X_model_one.iloc[n,:].values.reshape(1, -1))[0]
+    ###===================
+
     if prediction == 1:
         col2.info(f'Prédiction du modèle : {prediction}')
     else :

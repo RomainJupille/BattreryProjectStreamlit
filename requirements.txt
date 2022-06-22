@@ -1,1 +1,7 @@
 streamlit
+streamlit
+pandas
+random
+seaborn
+numpy
+matplotlib.pyplot
