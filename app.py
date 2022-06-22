@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from random import randint
 from seaborn import scatterplot, lineplot
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,11 +14,9 @@ df_raw_data_model_one = pd.read_csv('data/raw_data_test_model_one.csv').iloc[1:,
 df_X_model_one = pd.read_csv('data/X_test_model_one.csv')
 df_y_model_one = pd.read_csv('data/y_test_model_one.csv')
 
-n = randint(0,df_X_model_one.shape[0]-1)
-
 col1, col2 = st.columns(2)
 if col1.button('Faire une prédiction :'):
-    n = randint(0,df_raw_data_model_one.shape[0]-1)
+    n = np.random.randint(0,df_raw_data_model_one.shape[0]-1)
 
     ### proviroire : à remplacer par le call d'API
     model = joblib.load('model_one.joblib')
