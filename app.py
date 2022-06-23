@@ -23,9 +23,9 @@ if st.button('Faire une prédiction : Est-ce que la batterie va durer plus de 55
     ###===================
 
     if prediction == 1:
-        st.info(f'Oui, la batterie va durer plus de 550 cycles !')
+        st.info(f'Prédiction : Oui, la batterie va durer plus de 550 cycles !')
     else :
-        st.warning(f'Non, la batterie ne va pas durer 550 cycles')
+        st.warning(f'Prédiction : Non, la batterie ne va pas durer 550 cycles')
 
     fig, axs = plt.subplots(figsize=(8,2))
 
@@ -82,8 +82,8 @@ if st.button('Faire une prédiction : Combien de cycles la batterie va-t-elle en
 
     y_true = int(y_test_model_three.iloc[n,0])
     col1, col2 = st.columns(2)
-    col1.info(f'Nombre de cycles de vie restants prédits par le modèle : {prediction_2}')
-    col2.info(f'Nombre de cycles de vie restants réellement : {y_true}')
+    col1.info(f'Prédiction du nombre de cycles de vie restants : {prediction_2}')
+    col2.info(f'Nombre de cycles de vie restants réels : {y_true}')
 
     fig, axs = plt.subplots(figsize=(8,2))
 
