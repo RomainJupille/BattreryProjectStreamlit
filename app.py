@@ -61,7 +61,7 @@ st.write('\n')
 st.write('\n')
 st.write('\n')
 
-df_raw_data_model_three = pd.read_csv('data/raw_data_test_model_three.csv').iloc[1:,2:]
+df_raw_data_model_three = pd.read_csv('data/raw_data_test_model_three.csv').iloc[:,1:]
 X_test_model_three = np.genfromtxt('data/X_test_model_three.csv', delimiter = ',')
 X_test_model_three = X_test_model_three.reshape(X_test_model_three.shape[0],40,4)
 X_test_scaled_model_three = np.genfromtxt('data/X_test_scaled_model_three.csv',delimiter = ',')
@@ -69,28 +69,27 @@ X_test_scaled_model_three = X_test_scaled_model_three.reshape(X_test_scaled_mode
 y_test_model_three = pd.read_csv('data/y_test_model_three.csv')
 bc_test_model_three = pd.read_csv('data/bc_test_model_three.csv')
 
-
-
-
-
 col1, col2 = st.columns(2)
 if col1.button('Faire une prédiction :', key = 1):
-    n_2 = np.random.randint(0,df_raw_data_model_three.shape[0]-1)
+    n = np.random.randint(0,X_test_scaled_model_three.shape[0])
 
     ### proviroire : à remplacer par le call d'API
     model_2 = joblib.load('model_three.joblib')
-    st.write()
-    prediction_2 = int(model_2.predict(X_test_scaled_model_three[n_2,:,:].reshape(1,40,4))[0,0])
+    prediction_2 = int(model_2.predict(X_test_scaled_model_three[n,:,:].reshape(1,40,4))[0,0])
     ###===================
+
+    last_cycle = int(X_test_model_three[n,-1,-1])
+    barcode = bc_test_model_three.iloc[n,0]
 
     col2.info(f'Prédiction du modèle : {prediction_2}')
 
     fig, axs = plt.subplots(figsize=(8,2))
 
-    last_cycle = int(X_test_model_three[n_2,-1,-1])
+    df_data = df_raw_data_model_three[df_raw_data_model_three['barcode'] == barcode]
+    st.write(df_data)
     st.write(last_cycle)
-    scatterplot(y = df_raw_data_model_three.iloc[n_2,:last_cycle].fillna(0), x =np.arange(0,last_cycle,1), ax = axs, color = 'blue', alpha = 0.5)
-    scatterplot(y = df_raw_data_model_three.iloc[n_2,last_cycle:].fillna(0), x =np.arange(last_cycle,3000,1), ax = axs, color = 'grey', alpha = 0.5)
+    scatterplot(y = df_data.iloc[0,1:last_cycle+1].fillna(0), x =np.arange(0,last_cycle,1), ax = axs, color = 'blue', alpha = 0.5)
+    scatterplot(y = df_data.iloc[0,1+last_cycle:].fillna(0), x =np.arange(last_cycle,3000,1), ax = axs, color = 'grey', alpha = 0.5)
     lineplot(y = [0.8, 1.2], x = [last_cycle+prediction_2,last_cycle+prediction_2],color = 'red')
     axs.set_ylim(0.8,1.2)
     axs.set_yticks([0.8,0.9,1.0,1.1,1.2])
