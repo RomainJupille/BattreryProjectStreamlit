@@ -4,6 +4,21 @@ from seaborn import scatterplot, lineplot
 import numpy as np
 import matplotlib.pyplot as plt
 import joblib
+import requests
+
+
+def serialize_features(X):
+    serial = X.flatten()
+    return ",".join([str(i) for i in serial])
+
+def deserialize_features_model1(X_serialized, delimiter=','):
+    res = np.array([float(idx) for idx in X_serialized.split(delimiter)])
+    return res.reshape(1,-1)
+
+def deserialize_features_model2(X_serialized, n_features=5, deep=20, delimiter=','):
+    res = np.array([float(idx) for idx in X_serialized.split(delimiter)])
+    return res.reshape(1,deep,n_features)
+
 
 st.markdown("""#### Problème 1 : Prédire la durabilité d'une batterie à partir de ses 5 premiers cycles""")
 st.write('\n')
@@ -16,10 +31,35 @@ df_y_model_one = pd.read_csv('data/y_test_model_one.csv')
 
 if st.button('Faire une prédiction : Est-ce que la batterie va durer plus de 550 cycles ?', key = 0):
     n = np.random.randint(0,df_raw_data_model_one.shape[0]-1)
+    X_sample = df_X_model_one.iloc[n,:].values
+    y_true = df_y_model_one.iloc[n].values[0]
+
+    ### call d'API
+    params = {
+        "X_val_serialized": serialize_features(X_sample),
+    }
+
+    server_exist = True
+    #url = "http://127.0.0.1:8000"
+    url = "https://battery-hrfer72diq-ew.a.run.app"
+    response = requests.get(url+"/predict1", params=params)
+
+    if server_exist and response.status_code == 200:
+        prediction = response.json()['predict']
+        print("prediction (depuis l'api):", prediction)
+        print('real:', int(y_true))
+    else:
+        if server_exist:
+            print("API call error", response.status_code)
+        model = joblib.load('model_one.joblib')
+        X_val = df_X_model_one.iloc[n,:].values.reshape(1, -1)
+        prediction = model.predict(X_val)[0]
+        print("prediction:", prediction)
+        print('real:', int(y_true))
 
     ### proviroire : à remplacer par le call d'API
-    model = joblib.load('model_one.joblib')
-    prediction = model.predict(df_X_model_one.iloc[n,:].values.reshape(1, -1))[0]
+    #model = joblib.load('model_one.joblib')
+    #prediction = model.predict(df_X_model_one.iloc[n,:].values.reshape(1, -1))[0]
     ###===================
 
     if prediction == 1:
@@ -70,11 +110,38 @@ bc_test_model_three = pd.read_csv('data/bc_test_model_three.csv')
 
 col1, col2 = st.columns(2)
 if st.button('Faire une prédiction : Combien de cycles la batterie va-t-elle encore durer ?', key = 1):
+    n_features = 4
+    deep = 40
     n = np.random.randint(0,X_test_scaled_model_three.shape[0])
+    X_sample = X_test_scaled_model_three[n,:,:]
+    y_true = int(y_test_model_three.iloc[n,0])
+
+    params = {
+        "n_features": n_features,
+        "deep": deep,
+        "X_val_serialized": serialize_features(X_sample),
+    }
+    server_exist = True
+    #url = "http://127.0.0.1:8000"
+    url = "https://battery-hrfer72diq-ew.a.run.app"
+    response = requests.get(url+"/predict3", params=params)
+
+    if server_exist and response.status_code == 200:
+        prediction_2 = response.json()['predict']
+        print("prediction (depuis l'api):", prediction_2)
+        print('true:', int(y_true))
+    else:
+        if server_exist:
+            print("API call error", response.status_code)
+        #model_2 = joblib.load('model_three.joblib')
+        #X_val = X_sample.reshape(1,deep,n_features)
+        #prediction_2 = int(model_2.predict(X_val)[0,0])
+        #print("prediction:", prediction_2)
+        #print('true:', int(y_true))
 
     ### proviroire : à remplacer par le call d'API
-    model_2 = joblib.load('model_three.joblib')
-    prediction_2 = int(model_2.predict(X_test_scaled_model_three[n,:,:].reshape(1,40,4))[0,0])
+    #model_2 = joblib.load('model_three.joblib')
+    #prediction_2 = int(model_2.predict(X_test_scaled_model_three[n,:,:].reshape(1,40,4))[0,0])
     ###===================
 
     last_cycle = int(X_test_model_three[n,-1,-1])
