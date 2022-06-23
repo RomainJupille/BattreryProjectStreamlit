@@ -108,10 +108,3 @@ if st.button('Faire une prédiction : Combien de cycles la batterie va-t-elle en
         st.info(f"Le modèle a sous-estimé la durée de {y_true - prediction_2} cycles, soit une erreur de {round(((y_true - prediction_2)/y_true*100),1)}%")
     else :
         st.info(f"Le modèle a sur-estimé la durée de {prediction_2 - y_true} cycles, soit une erreur de {round(((prediction_2 - y_true)/y_true*100), 1)}%")
-
-#
-#     resultat = df_y_model_three.iloc[n_2].values[0]
-#     st.write(f"Le modèle fait une erreur de {resultat - }")
-#         st.success('Prédiction réussie')
-#     else :
-#         st.error('Prédiction fausse')
